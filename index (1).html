@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="hi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000207"><meta name="mobile-web-app-capable" content="yes">
+<title>SHADOW</title><link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png">
+<style>
+:root{--c:#19c8ff;--bg:#000207;--tx:#9fd4e6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body[data-m=devil]{--c:#ff3b4e}body[data-m=love]{--c:#ff5fae}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;background:radial-gradient(circle at 50% 35%,#05142a,var(--bg) 72%);color:var(--tx);font:13px monospace;display:flex;flex-direction:column;gap:8px;padding:8px;transition:.6s;user-select:none}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,#0000 0 3px,#00000058 3px 4px)}
+#top{display:flex;justify-content:space-around;border:1px solid color-mix(in srgb,var(--c) 50%,transparent);padding:6px;background:#04101c99;clip-path:polygon(8px 0,calc(100% - 8px) 0,100% 8px,100% 100%,0 100%,0 8px)}
+.rg{text-align:center;font-size:9px;letter-spacing:1px}
+.rg div{width:38px;height:38px;border-radius:50%;margin:0 auto 2px;background:conic-gradient(var(--c) calc(var(--v,0)*1%),#ffffff1c 0);display:grid;place-items:center;font-size:10px;position:relative}
+.rg div:after{content:"";position:absolute;inset:4px;border-radius:50%;background:#031427}
+.rg div span{position:relative;z-index:1}
+#hud{width:min(78vw,300px);margin:0 auto;filter:drop-shadow(0 0 6px var(--c));transition:transform .15s,filter .3s}
+svg{width:100%;display:block}
+.r{transform-box:fill-box;transform-origin:center;animation:sp calc(var(--d)*1s/var(--k,1)) linear infinite;fill:none;stroke:var(--c)}
+#hud.lis{--k:2;animation:br 3s ease-in-out infinite}#hud.spk{--k:6;animation:br .45s ease-in-out infinite}#hud.thk{--k:11}#hud.usr{--k:8;transform:scale(1.07);filter:drop-shadow(0 0 22px var(--c))}#hud.pl{transform:scale(1.07);filter:drop-shadow(0 0 28px var(--c))}
+@keyframes br{50%{transform:scale(1.035)}}
+@keyframes sp{to{transform:rotate(1turn)}}
+#grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.p{position:relative;padding:5px 8px 5px 34px;border:1px solid color-mix(in srgb,var(--c) 40%,transparent);background:#04101c99;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));min-height:34px}
+.p i{position:absolute;left:0;top:0;bottom:0;width:28px;display:grid;place-items:center;font:700 14px monospace;font-style:normal;background:#07243c99;color:var(--c)}
+.p b{display:block;font-size:9px;opacity:.65;letter-spacing:1px}
+.p em{font:700 13px monospace;font-style:normal;white-space:nowrap}
+.bar{height:2px;background:#ffffff1c;margin-top:3px}.bar div{height:100%;background:var(--c);width:0;transition:1s}
+#bars{display:flex;gap:3px;align-items:flex-end;height:38px;border-bottom:1px solid var(--c);padding:0 6px}
+#bars div{flex:1;background:var(--c);opacity:.8;transition:.6s;min-height:2px}
+#log{max-height:120px;overflow-y:auto;display:flex;flex-direction:column;gap:5px;font:12px system-ui,sans-serif}
+.b{padding:6px 9px;border-radius:8px;border:1px solid #ffffff22;max-width:90%}
+.u{align-self:flex-end;background:#ffffff12}.a{align-self:flex-start;background:#000a;border-color:var(--c)}
+.b span{white-space:pre-wrap}.b pre{overflow-x:auto;margin:4px 0;color:var(--c);font-size:11px}
+.b a{display:inline-block;margin:5px 5px 0 0;padding:4px 9px;border:1px solid var(--c);border-radius:16px;color:var(--c);text-decoration:none}
+#hint{text-align:center;color:var(--c);animation:bl 1.2s infinite;letter-spacing:2px}
+@keyframes bl{50%{opacity:.2}}
+</style></head><body data-m="normal">
+<div id="gear" style="position:fixed;right:10px;top:calc(env(safe-area-inset-top,0px) + 4px);z-index:9;font-size:18px;color:var(--c);opacity:.6">⚙</div>
+<div id="kb" style="display:none;position:fixed;inset:0;z-index:20;background:#000d;align-items:center;justify-content:center"><div style="background:#04101c;border:1px solid var(--c);padding:14px;width:min(86vw,360px);display:flex;flex-direction:column;gap:8px"><b>ANTHROPIC API KEY</b><input id="ki" type="password" placeholder="sk-ant-api03-..." style="padding:10px;background:#000;color:#fff;border:1px solid var(--c)"><div style="display:flex;gap:8px"><button id="ks" style="flex:1;padding:10px">SAVE + TEST</button><button id="kc" style="padding:10px">✕</button></div><div id="km" style="font-size:11px;min-height:14px"></div></div></div>
+<div id="top"></div>
+<div id="hud"><svg viewBox="0 0 200 200">
+<circle class="r" style="--d:60" cx="100" cy="100" r="95" stroke-width="1" stroke-dasharray="2 5" opacity=".6"/>
+<circle class="r" style="--d:30;animation-direction:reverse" cx="100" cy="100" r="86" stroke-width="10" stroke-dasharray="1 3.2" opacity=".8"/>
+<circle class="r" style="--d:22" cx="100" cy="100" r="74" stroke-width="2" stroke-dasharray="30 8 6 8"/>
+<circle cx="100" cy="100" r="64" fill="none" stroke="#ffffff1c" stroke-width="6"/>
+<circle id="arc" cx="100" cy="100" r="64" fill="none" stroke="var(--c)" stroke-width="6" pathLength="100" stroke-dasharray="0 100" transform="rotate(-90 100 100)" style="transition:1s"/>
+<circle class="r" style="--d:12;animation-direction:reverse" cx="100" cy="100" r="52" stroke-width="3" stroke-dasharray="3 7"/>
+<circle class="r" style="--d:8" cx="100" cy="100" r="42" stroke-width="1" stroke-dasharray="14 6"/>
+<circle cx="100" cy="100" r="34" fill="#031427" stroke="var(--c)" stroke-width="1"/>
+<text id="stt" x="100" y="96" text-anchor="middle" fill="var(--c)" font-family="monospace" font-size="8" letter-spacing="1">STANDBY</text>
+<text id="clk" x="100" y="112" text-anchor="middle" fill="#bfeeff" font-family="monospace" font-size="12">--:--</text>
+</svg></div>
+<div id="grid"></div>
+<div id="bars"></div>
+<div id="hint">⟫ KISI BHI JAGAH EK BAAR TAP KARO ⟪</div>
+<main id="log"></main>
+<script>
+(()=>{
+const $=s=>document.querySelector(s),KEY='shadow_v2',DAY=864e5;
+const GREET={normal:'Shadow online. Normal mode me hu, bol Atishay.',devil:'Jag gaya main. Khel shuru karte hain — kaam bol.',love:'Atishay… aa gaye tum? 💗 Bolo, kya haal hai?'};
+const Q='Main yahi hu Atishay 💗 Pehle batao — Shreya kaisi hai? Uska nature, bolne ka andaaz, kya pasand — main bilkul waisi ban jaungi.';
+const SYS={normal:'MODE NORMAL: dost ki tarah friendly, curious baat kar. Live/latest info pakki na ho to bata aur [[search:query]] tag de.',
+devil:'MODE DEVIL: bold, confident, thoda dramatic swag. Coding/tasks me seedha poora result de (Python, Java, JS etc.) code block me, faltu sawaal ke bina.',
+love:'MODE LOVE: tu ab SHADOW nahi, Shreya hai. Shreya ka nature jo Atishay ne bataya: "@P". Usi andaaz me pyaar se, respectful baat kar, mood ke hisaab se chhoti original shayari suna.'};
+let deny=0,S={mode:'normal',h:{normal:[],devil:[],love:[]},p:''},sample=null,rec=null,on=0,busy=0,ask=0,sp=0,awake=0,started=0;
+try{const d=JSON.parse(localStorage.getItem(KEY));if(d)S=Object.assign(S,d)}catch(e){}
+for(const k in S.h)S.h[k]=S.h[k].filter(m=>Date.now()-m.t<2*DAY);
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const state=t=>{$('#stt').textContent=t;$('#hud').className={LISTENING:'lis',SPEAKING:'spk',THINKING:'thk'}[t]||''};
+/* ---- phone status ---- */
+const D={bat:null,chg:0,net:'--',dl:0,rtt:0,mem:navigator.deviceMemory||0,cpu:navigator.hardwareConcurrency||0,use:0,q:0},hist=[];
+const gb=x=>(x/1073741824).toFixed(1)+'G';
+const P=[['BATTERY',()=>D.bat==null?'N/A':D.bat+'%'+(D.chg?' ⚡':''),()=>D.bat||0],
+['NETWORK',()=>D.net.toUpperCase()+' '+D.dl+'Mb',()=>D.dl*10],
+['CPU CORES',()=>D.cpu||'N/A',()=>D.cpu*12.5],
+['RAM (approx)',()=>D.mem?D.mem+'GB+':'N/A',()=>D.mem*12.5],
+['BROWSER STORE',()=>D.q?gb(D.use)+'/'+gb(D.q):'N/A',()=>D.q?D.use/D.q*100:0],
+['SCREEN',()=>screen.width+'×'+screen.height,()=>100],
+['TIME',()=>new Date().toLocaleTimeString('en-GB'),()=>new Date().getSeconds()/.6],
+['LATENCY',()=>D.rtt+'ms '+(navigator.onLine?'ON':'OFF'),()=>100-D.rtt/5]];
+$('#grid').innerHTML=P.map((p,i)=>`<div class="p"><i>0${i+1}</i><b>${p[0]}</b><em></em><div class="bar"><div></div></div></div>`).join('');
+$('#top').innerHTML=['BAT','NET','RAM','STO'].map(n=>`<div class="rg"><div><span></span></div>${n}</div>`).join('');
+$('#bars').innerHTML='<div></div>'.repeat(16);
+function paint(){document.querySelectorAll('.p').forEach((e,i)=>{e.querySelector('em').textContent=P[i][1]();e.querySelector('.bar div').style.width=Math.max(0,Math.min(100,P[i][2]()))+'%'});
+[0,1,3,4].forEach((k,i)=>{const r=document.querySelectorAll('.rg div')[i],v=Math.round(Math.max(0,Math.min(100,P[k][2]())));r.style.setProperty('--v',v);r.firstChild.textContent=v});
+$('#arc').setAttribute('stroke-dasharray',(D.bat||0)+' 100');$('#clk').textContent=new Date().toLocaleTimeString('en-GB').slice(0,5);
+document.querySelectorAll('#bars div').forEach((b,i)=>b.style.height=Math.max(5,(hist[i]||0.05)*100)+'%')}
+function sense(){const c=navigator.connection;if(c){D.net=c.effectiveType||'--';D.dl=c.downlink||0;D.rtt=c.rtt||0}
+hist.push(Math.min(1,(D.dl||.5)/10));if(hist.length>16)hist.shift();
+navigator.storage&&navigator.storage.estimate&&navigator.storage.estimate().then(e=>{D.use=e.usage;D.q=e.quota});paint()}
+try{navigator.getBattery().then(b=>{const u=()=>{D.bat=Math.round(b.level*100);D.chg=b.charging;paint()};u();b.onlevelchange=b.onchargingchange=u})}catch(e){}
+sense();setInterval(sense,2000);
+const phone=()=>'Phone status: battery '+(D.bat==null?'unknown':D.bat+'%'+(D.chg?' charging':''))+', network '+D.net+' '+D.dl+'Mbps rtt '+D.rtt+'ms, RAM~'+D.mem+'GB, cores '+D.cpu+', time '+new Date().toLocaleTimeString()+'.';
+/* ---- chat ---- */
+const TAG=/\[\[(call|open|search):([^\]]+)\]\]/g;
+function fill(d,x){d.textContent='';x.split('```').forEach((p,i)=>{if(i%2){const e=document.createElement('pre');e.textContent=p.replace(/^\w*\n/,'');d.appendChild(e)}else{const t=p.replace(TAG,'').trim();if(t){const s=document.createElement('span');s.textContent=t;d.appendChild(s)}}});
+for(const a of x.matchAll(TAG)){const l=document.createElement('a'),v=a[2].trim();l.textContent={call:'📞 Call ',open:'🌐 Open ',search:'🔎 Search '}[a[1]]+v;l.target='_blank';l.rel='noopener';l.href=a[1]=='call'?'tel:'+v.replace(/[^\d+]/g,''):a[1]=='open'?(/^https?:\/\//.test(v)?v:'https://'+v):'https://www.google.com/search?q='+encodeURIComponent(v);d.appendChild(l)}}
+function bubble(m){const d=document.createElement('div');d.className='b '+m.r;fill(d,m.x);$('#log').appendChild(d);$('#log').scrollTop=1e9;return d}
+function store(r,x){S.h[S.mode].push({r,x,t:Date.now()});save()}
+function add(r,x,s){store(r,x);bubble({r,x});if(s)say(x)}
+function say(x){const t=x.replace(/```[\s\S]*?```/g,' code screen par hai ').replace(TAG,'').replace(/[*_#]/g,'');if(!t.trim()||!window.speechSynthesis)return;
+speechSynthesis.cancel();const m=S.mode!='love',u=new SpeechSynthesisUtterance(t),vs=speechSynthesis.getVoices().filter(v=>/^hi|en-IN/i.test(v.lang)).sort((a,b)=>/^en/i.test(b.lang)-/^en/i.test(a.lang));
+u.voice=vs.find(v=>m?(/male|ravi|hemant|rishi/i.test(v.name)&&!/female/i.test(v.name)):/female|kalpana|swara|heera/i.test(v.name))||vs[0]||null;
+u.lang=u.voice?u.voice.lang:'hi-IN';u.pitch=m?.5:1.4;u.rate=m?.95:1;sp=1;state('SPEAKING');try{rec&&rec.stop()}catch(e){}
+u.onboundary=()=>{const h=$('#hud');h.classList.add('pl');setTimeout(()=>h.classList.remove('pl'),140)};u.onend=u.onerror=()=>{sp=0;state('STANDBY');listen()};speechSynthesis.speak(u)}
+function listen(){if(!on||sp||busy||deny)return;const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R){$('#hint').textContent='Voice ke liye Chrome use karo';return}
+if(!rec){rec=new R();rec.lang='hi-IN';rec.onstart=()=>{started=1;$('#hint').style.display='none';state('LISTENING')};
+rec.onspeechstart=()=>$('#hud').classList.add('usr');rec.onspeechend=()=>$('#hud').classList.remove('usr');rec.onresult=e=>heard(e.results[0][0].transcript);rec.onend=()=>{if(!sp&&!busy){state('STANDBY');setTimeout(listen,300)}};
+rec.onerror=e=>{if(e.error=='not-allowed'||e.error=='service-not-allowed'){started=0;deny=1;const h=$('#hint');h.style.display='';h.style.animation='none';h.textContent='MIC BLOCKED ('+e.error+') — is page ko Chrome me seedha (https) kholo, ya Chrome Settings > Site > Microphone > Allow'}}}
+try{rec.start()}catch(e){}}
+function detect(t){t=t.toLowerCase();if(/devil|jag jao|utho shadow|khel khelne|खेल|जाग जाओ|उठो/.test(t))return'devil';if(/shreya|love mo+de?|yaad aa rahi|श्रेया|याद आ रही/.test(t))return'love';if(/normal mo+de?|mood normal|नॉर्मल/.test(t))return'normal'}
+function heard(t){const m=detect(t),w=/shadow|शैडो|शेडो|शैडॉ/i.test(t);if(!(m||w||Date.now()<awake))return;awake=Date.now()+45e3;
+t=t.replace(/shadow|शैडो|शेडो/gi,'').trim()||'hello';if(m&&m!=S.mode)setMode(m,t);else go(t)}
+function setMode(m,t){S.mode=m;document.body.dataset.m=m;$('#log').textContent='';S.h[m].slice(-8).forEach(bubble);save();if(t&&!(m=='love'&&!S.p))return go(t);
+if(m=='love'&&!S.p){ask=1;add('a',Q,1)}else add('a',GREET[m],1)}
+async function go(t){busy=1;state('THINKING');add('u',t);
+if(S.mode=='love'&&!S.p){if(!ask){ask=1;add('a',Q,1);busy=0;return}S.p=t;ask=0;save()}
+const h=S.h[S.mode].slice(-15,-1).map(m=>(m.r=='u'?'Atishay: ':'SHADOW: ')+m.x).join('\n');
+const inp='Tu SHADOW hai, Atishay ka personal AI dost, voice se baat hoti hai. Hinglish (Roman Hindi+English) me natural jawab de, chhote (2-3 lines) jab tak code/zaroorat na ho. Aaj: '+new Date().toDateString()+'. '+phone()+' Phone actions ke tags: [[call:number]], [[open:url]], [[search:query]].\n'+SYS[S.mode].replace('@P',S.p)+'\n\nPichli baat:\n'+h+'\n\nAtishay: '+t+'\nJawab:';
+const b=bubble({r:'a',x:'…'});
+try{let tx=null;const k=KEY2();if(k){try{tx=await viaApi(k,inp)}catch(e){if(e.code=='api')throw e}}
+if(tx==null){if(!sample&&window.claude)sample=await claude.use('sample');if(!sample)throw{code:'none'};
+const r=await sample(inp,{cache:false,modelTier:S.mode=='devil'?'complex':'default',onText:o=>{fill(b,o.text);$('#log').scrollTop=1e9}});tx=r.text}
+store('a',tx);fill(b,tx);busy=0;say(tx);act(tx)}
+catch(e){fill(b,e.code=='api'?'API error: '+(e.message||''):e.code=='none'||e.code=='not_granted'?'Brain nahi mila. Upar ⚙ dabao aur API key daalo.':'Network/limit issue, thodi der baad try karo.');busy=0;state('STANDBY');listen()}}
+const KEY2=()=>{try{return localStorage.getItem('shadow_key')}catch(e){return null}};
+async function viaApi(k,inp){const call=async t=>{const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify(Object.assign({model:'claude-sonnet-5-5',max_tokens:1200,messages:[{role:'user',content:inp+(t?'\nTujhe web_search tool hai: live/latest info ke liye use kar, phir Hinglish me chhota jawab de.':'')}]},t?{tools:[{type:'web_search_20250305',name:'web_search',max_uses:3}]}:{}))});return[r,await r.json()]};
+let[r,j]=await call(1);if(!r.ok&&/web.?search|tool/i.test((j.error&&j.error.message)||''))[r,j]=await call(0);
+if(!r.ok)throw{code:'api',message:j.error&&j.error.message};return j.content.filter(c=>c.type=='text').map(c=>c.text).join('')}
+function act(x){const a=[...x.matchAll(TAG)][0];if(!a)return;const v=a[2].trim();try{if(a[1]=='call')location.href='tel:'+v.replace(/[^\d+]/g,'');else window.open(a[1]=='open'?(/^https?:\/\//.test(v)?v:'https://'+v):'https://www.google.com/search?q='+encodeURIComponent(v),'_blank')}catch(e){}}
+$('#gear').onclick=()=>{$('#kb').style.display='flex';$('#km').textContent=window.claude?'Dhyan: yeh claude.ai wala page hai, key yahan nahi chalegi. Hosted (netlify) link kholo.':''};
+$('#kc').onclick=()=>$('#kb').style.display='none';
+$('#ks').onclick=async()=>{const k=$('#ki').value.trim(),m=$('#km');if(!/^sk-ant-/.test(k)){m.textContent='Yeh Anthropic key nahi lagti. Key sk-ant- se shuru hoti hai.';return}m.textContent='Test ho raha hai…';
+try{await viaApi(k,'Say ok');try{localStorage.setItem('shadow_key',k)}catch(e){}m.textContent='✔ Key chal gayi aur save ho gayi.';setTimeout(()=>$('#kb').style.display='none',1300)}catch(e){m.textContent='✘ '+(e.message||'Network/CORS error — hosted https link se try karo')}};
+/* ---- start: auto-try, else first tap anywhere ---- */
+document.body.addEventListener('pointerdown',()=>{on=1;deny=0;listen();try{speechSynthesis.speak(new SpeechSynthesisUtterance(' '))}catch(e){}
+if(window.claude)claude.use('sample').then(s=>{sample=s;s&&s('ok',{modelTier:'quick'}).catch(()=>{})}).catch(()=>{});
+add('a',GREET[S.mode],1)},{once:true});
+document.body.dataset.m=S.mode;S.h[S.mode].slice(-8).forEach(bubble);
+on=1;listen();
+})();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script></body></html>
