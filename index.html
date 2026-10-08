@@ -37,7 +37,7 @@ svg{width:100%;display:block}
 @keyframes bl{50%{opacity:.2}}
 </style></head><body data-m="normal">
 <div id="gear" style="position:fixed;right:10px;top:calc(env(safe-area-inset-top,0px) + 4px);z-index:9;font-size:18px;color:var(--c);opacity:.6">⚙</div>
-<div id="kb" style="display:none;position:fixed;inset:0;z-index:20;background:#000d;align-items:center;justify-content:center"><div style="background:#04101c;border:1px solid var(--c);padding:14px;width:min(86vw,360px);display:flex;flex-direction:column;gap:8px"><b>ANTHROPIC API KEY</b><input id="ki" type="password" placeholder="sk-ant-api03-..." style="padding:10px;background:#000;color:#fff;border:1px solid var(--c)"><div style="display:flex;gap:8px"><button id="ks" style="flex:1;padding:10px">SAVE + TEST</button><button id="kc" style="padding:10px">✕</button></div><div id="km" style="font-size:11px;min-height:14px"></div></div></div>
+<div id="kb" style="display:none;position:fixed;inset:0;z-index:20;background:#000d;align-items:center;justify-content:center"><div style="background:#04101c;border:1px solid var(--c);padding:14px;width:min(86vw,360px);display:flex;flex-direction:column;gap:8px"><b>API KEY (Google AIza… ya Anthropic sk-ant-…)</b><input id="ki" type="password" placeholder="AIza... ya sk-ant-..." style="padding:10px;background:#000;color:#fff;border:1px solid var(--c)"><div style="display:flex;gap:8px"><button id="ks" style="flex:1;padding:10px">SAVE + TEST</button><button id="kc" style="padding:10px">✕</button></div><div id="km" style="font-size:11px;min-height:14px"></div></div></div>
 <div id="top"></div>
 <div id="hud"><svg viewBox="0 0 200 200">
 <circle class="r" style="--d:60" cx="100" cy="100" r="95" stroke-width="1" stroke-dasharray="2 5" opacity=".6"/>
@@ -120,19 +120,47 @@ const h=S.h[S.mode].slice(-15,-1).map(m=>(m.r=='u'?'Atishay: ':'SHADOW: ')+m.x).
 const inp='Tu SHADOW hai, Atishay ka personal AI dost, voice se baat hoti hai. Hinglish (Roman Hindi+English) me natural jawab de, chhote (2-3 lines) jab tak code/zaroorat na ho. Aaj: '+new Date().toDateString()+'. '+phone()+' Phone actions ke tags: [[call:number]], [[open:url]], [[search:query]].\n'+SYS[S.mode].replace('@P',S.p)+'\n\nPichli baat:\n'+h+'\n\nAtishay: '+t+'\nJawab:';
 const b=bubble({r:'a',x:'…'});
 try{let tx=null;const k=KEY2();if(k){try{tx=await viaApi(k,inp)}catch(e){if(e.code=='api')throw e}}
-if(tx==null){if(!sample&&window.claude)sample=await claude.use('sample');if(!sample)throw{code:'none'};
-const r=await sample(inp,{cache:false,modelTier:S.mode=='devil'?'complex':'default',onText:o=>{fill(b,o.text);$('#log').scrollTop=1e9}});tx=r.text}
+if(tx==null){if(!sample&&window.claude)sample=await claude.use('sample').catch(()=>null);
+if(sample){const r=await sample(inp,{cache:false,modelTier:S.mode=='devil'?'complex':'default',onText:o=>{fill(b,o.text);$('#log').scrollTop=1e9}});tx=r.text}
+else{try{tx=await free(inp)}catch(e){tx=local(t)}}}
 store('a',tx);fill(b,tx);busy=0;say(tx);act(tx)}
-catch(e){fill(b,e.code=='api'?'API error: '+(e.message||''):e.code=='none'||e.code=='not_granted'?'Brain nahi mila. Upar ⚙ dabao aur API key daalo.':'Network/limit issue, thodi der baad try karo.');busy=0;state('STANDBY');listen()}}
+catch(e){fill(b,e.code=='api'?'API error: '+(e.message||''):e.code=='none'||e.code=='not_granted'?'Brain nahi mila. ⚙ dabao aur key daalo.':'Network/limit issue, thodi der baad try karo.');busy=0;state('STANDBY');listen()}}
 const KEY2=()=>{try{return localStorage.getItem('shadow_key')}catch(e){return null}};
-async function viaApi(k,inp){const call=async t=>{const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify(Object.assign({model:'claude-sonnet-5-5',max_tokens:1200,messages:[{role:'user',content:inp+(t?'\nTujhe web_search tool hai: live/latest info ke liye use kar, phir Hinglish me chhota jawab de.':'')}]},t?{tools:[{type:'web_search_20250305',name:'web_search',max_uses:3}]}:{}))});return[r,await r.json()]};
+async function viaAnt(k,inp){const call=async t=>{const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify(Object.assign({model:'claude-sonnet-5-5',max_tokens:1200,messages:[{role:'user',content:inp+(t?'\nTujhe web_search tool hai: live/latest info ke liye use kar, phir Hinglish me chhota jawab de.':'')}]},t?{tools:[{type:'web_search_20250305',name:'web_search',max_uses:3}]}:{}))});return[r,await r.json()]};
 let[r,j]=await call(1);if(!r.ok&&/web.?search|tool/i.test((j.error&&j.error.message)||''))[r,j]=await call(0);
 if(!r.ok)throw{code:'api',message:j.error&&j.error.message};return j.content.filter(c=>c.type=='text').map(c=>c.text).join('')}
+async function free(inp){const c=new AbortController();setTimeout(()=>c.abort(),12000);const r=await fetch('https://text.pollinations.ai/'+encodeURIComponent(inp.slice(-1800))+'?model=openai',{signal:c.signal});if(!r.ok)throw 0;const x=(await r.text()).trim();if(!x)throw 0;return x}
+const SH=['Tere bina ye din adhoora sa lagta hai,\nteri ek muskaan se mera mausam badalta hai.','Raat ko chaand se maine tera zikr kiya,\nusne bhi kaha — us jaisa koi aur kahan.','Lafz kam pad jaate hain jab tu saamne ho,\nchup rehna bhi tujhse baat jaisa lagta hai.'];
+const JK=['Teacher: tum late kyu ho? Student: sir, signboard pe likha tha "School ahead, go slow".','Phone: 1% battery. Main: bas ek aur reel. Phone: band.'];
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+function local(t){const q=t.toLowerCase(),n=(q.match(/\+?\d[\d\s-]{7,}/)||[''])[0];
+if(/battery|बैटरी/.test(q))return'Battery '+(D.bat==null?'pata nahi chal raha':D.bat+'% hai'+(D.chg?', charging chal rahi hai':''))+'.';
+if(/time|samay|baje|टाइम/.test(q))return'Abhi '+new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})+' ho rahe hain.';
+if(/date|tarikh|din kya/.test(q))return'Aaj '+new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'})+' hai.';
+if(/network|net speed|internet/.test(q))return'Network '+D.net+', speed '+D.dl+' Mbps, latency '+D.rtt+' ms.';
+if(/shayari|shayri|शायरी/.test(q))return pick(SH);
+if(/joke|chutkula|चुटकुला/.test(q))return pick(JK);
+if(n&&/call|phone|dial|लगा/.test(q))return'Call lagaata hu. [[call:'+n.replace(/\s|-/g,'')+']]';
+const A={youtube:'youtube.com',whatsapp:'wa.me',instagram:'instagram.com',maps:'maps.google.com',gmail:'mail.google.com',facebook:'facebook.com'};
+for(const k in A)if(q.includes(k)&&/khol|open|chalu|start/.test(q))return k+' khol raha hu. [[open:'+A[k]+']]';
+const s2=q.replace(/shadow|search|dhundo|khojo|google|par|pe|karo|kar|batao|bata|kya|hai|ke baare me/g,'').trim();
+return'Iska pakka jawab mere paas nahi, Google par dhundh raha hu. [[search:'+(s2||q)+']]'}
+const viaApi=(k,inp)=>/^AIza/.test(k)?viaGem(k,inp):viaAnt(k,inp);
+async function viaGem(k,inp){let ms=[];try{ms=JSON.parse(localStorage.getItem('shadow_gm')||'[]')}catch(e){}
+if(!ms.length){try{const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200&key='+k),j=await r.json();if(!r.ok)throw{code:'api',message:j.error&&j.error.message};
+const v=n=>parseFloat((n.match(/gemini-([\d.]+)/)||[0,0])[1]);
+ms=(j.models||[]).filter(m=>/flash/.test(m.name)&&!/lite|image|tts|live|audio|embed|exp|vision|thinking|robot|computer|8b/.test(m.name)&&(m.supportedGenerationMethods||[]).includes('generateContent')).map(m=>m.name.replace('models/','')).sort((a,b)=>v(b)-v(a)||(/preview/.test(a)-/preview/.test(b))).slice(0,3);
+try{localStorage.setItem('shadow_gm',JSON.stringify(ms))}catch(e){}}catch(e){if(e.code=='api')throw e}}
+if(!ms.length)ms=['gemini-2.5-flash'];
+let last='';for(const m of ms){for(const t of [1,0]){try{const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+m+':generateContent',{method:'POST',headers:{'content-type':'application/json','x-goog-api-key':k},body:JSON.stringify(Object.assign({contents:[{role:'user',parts:[{text:inp+(t?'\nTujhe Google Search hai: live/latest info ke liye use kar, phir Hinglish me chhota jawab de.':'')}]}]},t?{tools:[{google_search:{}}]}:{}))});const j=await r.json();
+if(r.ok){const x=((j.candidates||[])[0]||{}).content,tx=((x&&x.parts)||[]).filter(p=>p.text&&!p.thought).map(p=>p.text).join('');if(tx)return tx;last='Khaali jawab aaya';continue}
+last=(j.error&&j.error.message)||'error';if(r.status==429||r.status==401||(r.status==403&&!/tool|search/i.test(last)))throw{code:'api',message:last}}catch(e){if(e.code=='api')throw e;last=last||'Network error'}}}
+throw{code:'api',message:last}}
 function act(x){const a=[...x.matchAll(TAG)][0];if(!a)return;const v=a[2].trim();try{if(a[1]=='call')location.href='tel:'+v.replace(/[^\d+]/g,'');else window.open(a[1]=='open'?(/^https?:\/\//.test(v)?v:'https://'+v):'https://www.google.com/search?q='+encodeURIComponent(v),'_blank')}catch(e){}}
 $('#gear').onclick=()=>{$('#kb').style.display='flex';$('#km').textContent=window.claude?'Dhyan: yeh claude.ai wala page hai, key yahan nahi chalegi. Hosted (netlify) link kholo.':''};
 $('#kc').onclick=()=>$('#kb').style.display='none';
-$('#ks').onclick=async()=>{const k=$('#ki').value.trim(),m=$('#km');if(!/^sk-ant-/.test(k)){m.textContent='Yeh Anthropic key nahi lagti. Key sk-ant- se shuru hoti hai.';return}m.textContent='Test ho raha hai…';
-try{await viaApi(k,'Say ok');try{localStorage.setItem('shadow_key',k)}catch(e){}m.textContent='✔ Key chal gayi aur save ho gayi.';setTimeout(()=>$('#kb').style.display='none',1300)}catch(e){m.textContent='✘ '+(e.message||'Network/CORS error — hosted https link se try karo')}};
+$('#ks').onclick=async()=>{const k=$('#ki').value.trim(),m=$('#km');if(!/^(sk-ant-|AIza)/.test(k)){m.textContent='Key galat lagti hai. Google key AIza se, Anthropic key sk-ant- se shuru hoti hai.';return}m.textContent='Test ho raha hai…';
+try{await viaApi(k,'Say ok');try{localStorage.setItem('shadow_key',k);localStorage.removeItem('shadow_gm')}catch(e){}m.textContent='✔ Key chal gayi aur save ho gayi.';setTimeout(()=>$('#kb').style.display='none',1300)}catch(e){m.textContent='✘ '+(e.message||'Network/CORS error — hosted https link se try karo')}};
 /* ---- start: auto-try, else first tap anywhere ---- */
 document.body.addEventListener('pointerdown',()=>{on=1;deny=0;listen();try{speechSynthesis.speak(new SpeechSynthesisUtterance(' '))}catch(e){}
 if(window.claude)claude.use('sample').then(s=>{sample=s;s&&s('ok',{modelTier:'quick'}).catch(()=>{})}).catch(()=>{});
